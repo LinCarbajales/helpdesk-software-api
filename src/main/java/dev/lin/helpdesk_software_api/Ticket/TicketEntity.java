@@ -9,12 +9,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Column;
 
 
+@Entity
 public class TicketEntity {
 
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long requesterId;    // Relación con users (solicitante)
     private Long subjectId;      // Relación con subjects
@@ -22,7 +26,6 @@ public class TicketEntity {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime resolvedAt;
     
     // Foreign Keys
 
@@ -31,16 +34,25 @@ public class TicketEntity {
     public TicketEntity() {
     }
 
-    public TicketEntity(Long id, Long requesterId, Long subjectId, String description,
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public TicketEntity(Long requesterId, Long subjectId, String description,
                        String status) {
-        this.id = id;
         this.requesterId = requesterId;
         this.subjectId = subjectId;
         this.description = description;
         this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.resolvedAt = LocalDateTime.now();
     }
 
     // Getters
@@ -72,10 +84,6 @@ public class TicketEntity {
         return updatedAt;
     }
 
-    public LocalDateTime getResolvedAt() {
-        return resolvedAt;
-    }
-
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -103,10 +111,6 @@ public class TicketEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public void setResolvedAt(LocalDateTime resolvedAt) {
-        this.resolvedAt = resolvedAt;
     }
     
 }
