@@ -1,0 +1,7 @@
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('Hardware Issue');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('Software Issue');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('Network Error');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('Account Access');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('Email Problem');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('General Question');
+INSERT INTO SUBJECT_ENTITY (name) VALUES ('New Request');
