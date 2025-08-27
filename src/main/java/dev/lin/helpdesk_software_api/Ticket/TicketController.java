@@ -25,8 +25,7 @@ public class TicketController {
         TicketEntity newTicket = new TicketEntity(
             4L, 
             2L, 
-            "No arranca el Excel",
-            "Pending"
+            "No arranca el Excel"
         );
         return ticketService.createTicket(newTicket);
     }

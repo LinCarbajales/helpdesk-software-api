@@ -1,17 +1,17 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
 
 
 @Entity
@@ -20,11 +20,14 @@ public class TicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long requesterId;    // Relación con users (solicitante)
-    private Long subjectId;      // Relación con subjects
+    private Long requesterId;    // FK
+    private Long subjectId;      // FK
     private String description;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status = TicketStatus.OPEN;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
     
     // Foreign Keys
@@ -45,12 +48,10 @@ public class TicketEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public TicketEntity(Long requesterId, Long subjectId, String description,
-                       String status) {
+    public TicketEntity(Long requesterId, Long subjectId, String description) {
         this.requesterId = requesterId;
         this.subjectId = subjectId;
         this.description = description;
-        this.status = status;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -72,7 +73,7 @@ public class TicketEntity {
         return description;
     }
 
-    public String getStatus() {
+    public TicketStatus getStatus() {
         return status;
     }
 
@@ -101,7 +102,7 @@ public class TicketEntity {
         this.description = description;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TicketStatus status) {
         this.status = status;
     }
 
