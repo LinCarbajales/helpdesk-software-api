@@ -16,7 +16,7 @@ public class TicketServiceImpl implements IGenericService<TicketResponseDTO, Tic
     
     @Override
     public List<TicketResponseDTO> getAllEntities() {
-        return ticketRepository.findAll()
+        return ticketRepository.findAllByOrderByCreatedAtAsc()
                                .stream()
                                .map(TicketMapper::toDTO)
                                .collect(Collectors.toList());
