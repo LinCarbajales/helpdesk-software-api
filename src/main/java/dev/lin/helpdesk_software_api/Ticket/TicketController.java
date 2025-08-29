@@ -1,44 +1,45 @@
 package dev.lin.helpdesk_software_api.Ticket;
- 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import dev.lin.helpdesk_software_api.Implementations.IGenericService;
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping; // Importa PostMapping
-import org.springframework.web.bind.annotation.RequestBody; // Importa RequestBody
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus; // Importa ResponseStatus
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-
 
 @RestController
 @RequestMapping(path = "${api-endpoint}/tickets")
 public class TicketController {
-    
-    @Autowired
-    private TicketService ticketService;
-    
-    // Método para crear un ticket de prueba y devolverlo
-    @GetMapping("/create-and-get")
-    public TicketEntity createAndGetTicket() {
-        TicketEntity newTicket = new TicketEntity(
-            4L, 
-            2L, 
-            "No arranca el Excel"
-        );
-        return ticketService.createTicket(newTicket);
+
+    private final IGenericService<TicketResponseDTO, TicketRequestDTO> ticketService;
+
+    public TicketController(IGenericService<TicketResponseDTO, TicketRequestDTO> ticketService) {
+        this.ticketService = ticketService;
     }
-    
-    // Método para obtener todos los tickets
+
     @GetMapping("")
-    public List<TicketEntity> getAllTickets() {
-        return ticketService.getAllTickets();
+    public List<TicketResponseDTO> getAllTickets() {
+        return ticketService.getAllEntities();
     }
 
     @PostMapping("")
-    @ResponseStatus(HttpStatus.CREATED)
-    public TicketEntity createTicket(@RequestBody TicketEntity newTicket) {
-        return ticketService.createTicket(newTicket);
+    public ResponseEntity<TicketResponseDTO> storeEntity(@Valid @RequestBody TicketRequestDTO dtoRequest) {
+
+        if (dtoRequest.description().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        TicketResponseDTO entityStored = ticketService.storeEntity(dtoRequest);
+
+        if (entityStored == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityStored);
     }
 }

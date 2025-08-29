@@ -2,8 +2,6 @@ package dev.lin.helpdesk_software_api.Ticket;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -25,9 +23,7 @@ public class TicketEntity {
     private String description;
     @Enumerated(EnumType.STRING)
     private TicketStatus status = TicketStatus.OPEN;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createdAt;
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updatedAt;
     
     // Foreign Keys
