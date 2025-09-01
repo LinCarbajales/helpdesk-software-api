@@ -2,33 +2,42 @@ package dev.lin.helpdesk_software_api.Ticket;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.EnumType;
-
+import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "tickets")
 public class TicketEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ticket_id")
     private Long id;
-    private Long requesterId;    // FK
-    private Long subjectId;      // FK
+    
+    @Column(name = "requester_id")
+    private Long requesterId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "subject_id",
+        referencedColumnName = "id_subject",
+        nullable = false
+    )
+    private SubjectEntity subjectId;
+
+    @Column(name = "description")
     private String description;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private TicketStatus status = TicketStatus.OPEN;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    // Foreign Keys
-
-
 
     public TicketEntity() {
     }
@@ -44,7 +53,7 @@ public class TicketEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public TicketEntity(Long requesterId, Long subjectId, String description) {
+    public TicketEntity(Long requesterId, SubjectEntity subjectId, String description) {
         this.requesterId = requesterId;
         this.subjectId = subjectId;
         this.description = description;
@@ -61,7 +70,7 @@ public class TicketEntity {
         return requesterId;
     }
 
-    public Long getSubjectId() {
+    public SubjectEntity getSubjectId() {
         return subjectId;
     }
 
@@ -90,7 +99,7 @@ public class TicketEntity {
         this.requesterId = requesterId;
     }
 
-    public void setSubjectId(Long subjectId) {
+    public void setSubjectId(SubjectEntity subjectId) {
         this.subjectId = subjectId;
     }
 
