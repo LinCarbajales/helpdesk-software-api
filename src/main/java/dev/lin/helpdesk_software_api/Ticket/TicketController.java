@@ -27,6 +27,13 @@ public class TicketController {
         return ticketService.getAllEntities();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable Long id) {
+        return ticketService.showById(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("")
     public ResponseEntity<TicketResponseDTO> storeEntity(@Valid @RequestBody TicketRequestDTO dtoRequest) {
         TicketResponseDTO entityStored = ticketService.storeEntity(dtoRequest);
