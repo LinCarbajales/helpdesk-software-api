@@ -1,7 +1,10 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
 import dev.lin.helpdesk_software_api.Implementations.IGenericService;
+import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
+import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,23 +12,52 @@ import java.util.stream.Collectors;
 public class TicketServiceImpl implements IGenericService<TicketResponseDTO, TicketRequestDTO> {
 
     private final TicketRepository ticketRepository;
+    private final SolvedTicketRepository solvedTicketRepository;
+    private final TicketMapper ticketMapper;
 
-    public TicketServiceImpl(TicketRepository ticketRepository) {
+    public TicketServiceImpl(
+        TicketRepository ticketRepository,
+        SolvedTicketRepository solvedTicketRepository,
+        TicketMapper ticketMapper
+    ) {
         this.ticketRepository = ticketRepository;
+        this.solvedTicketRepository = solvedTicketRepository;
+        this.ticketMapper = ticketMapper;
     }
     
     @Override
     public List<TicketResponseDTO> getAllEntities() {
         return ticketRepository.findAllByOrderByCreatedAtAsc()
                                .stream()
-                               .map(TicketMapper::toDTO)
+                               .map(ticketMapper::toDTO)
                                .collect(Collectors.toList());
     }
 
     @Override
     public TicketResponseDTO storeEntity(TicketRequestDTO dtoRequest) {
-        TicketEntity ticket = TicketMapper.toEntity(dtoRequest);
+        TicketEntity ticket = ticketMapper.toEntity(dtoRequest);
         TicketEntity createdTicket = ticketRepository.save(ticket);
-        return TicketMapper.toDTO(createdTicket);
+        return ticketMapper.toDTO(createdTicket);
+    }
+
+    @Transactional
+    public TicketResponseDTO updateTicketStatus(Long ticketId, TicketUpdateRequestDTO dtoRequest) {
+        return ticketRepository.findById(ticketId)
+            .map(ticket -> {
+                if (dtoRequest.newStatus() == TicketStatus.ATTENDED) {
+                    if (ticket.getStatus().canTransitionTo(dtoRequest.newStatus())) {
+                        ticket.setStatus(dtoRequest.newStatus());
+                        SolvedTicketEntity solvedTicket = new SolvedTicketEntity(ticket, dtoRequest.attendeeId());
+                        solvedTicketRepository.save(solvedTicket);
+                        TicketEntity updatedTicket = ticketRepository.save(ticket);
+                        return ticketMapper.toDTO(updatedTicket);
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return null;
+                }
+            })
+            .orElse(null);
     }
 }
