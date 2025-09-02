@@ -2,9 +2,11 @@ package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+import dev.lin.helpdesk_software_api.exceptions.SolvedTicketNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,11 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class SolvedTicketControllerTest {
@@ -55,30 +54,25 @@ class SolvedTicketControllerTest {
     @DisplayName("Should return a solved ticket when found by ID")
     void getSolvedTicketById_ShouldReturnSolvedTicketWhenFound() {
         // Arrange
-        when(solvedTicketService.showById(1L)).thenReturn(Optional.of(solvedTicketResponseDTO1));
+        when(solvedTicketService.showById(1L)).thenReturn(solvedTicketResponseDTO1);
 
         // Act
-        ResponseEntity<SolvedTicketResponseDTO> response = solvedTicketController.getSolvedTicketById(1L);
+        SolvedTicketResponseDTO result = solvedTicketController.getSolvedTicketById(1L);
 
         // Assert
-        assertThat(response.getStatusCode(), is(equalTo(HttpStatus.OK)));
-        assertThat(response.getBody(), is(notNullValue()));
-        assertThat(response.getBody().id(), is(equalTo(1L)));
+        assertThat(result, is(notNullValue()));
+        assertThat(result.id(), is(equalTo(1L)));
         verify(solvedTicketService, times(1)).showById(1L);
     }
 
     @Test
-    @DisplayName("Should return NOT_FOUND when solved ticket not found by ID")
-    void getSolvedTicketById_ShouldReturnNotFoundWhenNotFound() {
+    @DisplayName("Should throw SolvedTicketNotFoundException when solved ticket not found by ID")
+    void getSolvedTicketById_ShouldThrowExceptionWhenNotFound() {
         // Arrange
-        when(solvedTicketService.showById(1L)).thenReturn(Optional.empty());
+        when(solvedTicketService.showById(1L)).thenThrow(new SolvedTicketNotFoundException("Not found"));
 
-        // Act
-        ResponseEntity<SolvedTicketResponseDTO> response = solvedTicketController.getSolvedTicketById(1L);
-
-        // Assert
-        assertThat(response.getStatusCode(), is(equalTo(HttpStatus.NOT_FOUND)));
-        assertThat(response.getBody(), is(nullValue()));
+        // Act & Assert
+        assertThrows(SolvedTicketNotFoundException.class, () -> solvedTicketController.getSolvedTicketById(1L));
         verify(solvedTicketService, times(1)).showById(1L);
     }
 }

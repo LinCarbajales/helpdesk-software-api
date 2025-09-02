@@ -4,9 +4,9 @@ import dev.lin.helpdesk_software_api.Implementations.IGenericService;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketRepository;
 import org.springframework.stereotype.Service;
+import dev.lin.helpdesk_software_api.exceptions.TicketNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,9 +42,10 @@ public class TicketServiceImpl implements IGenericService<TicketResponseDTO, Tic
     }
 
     @Override
-    public Optional<TicketResponseDTO> showById(Long id) {
+    public TicketResponseDTO showById(Long id) {
         return ticketRepository.findById(id)
-                               .map(ticketMapper::toDTO);
+                               .map(ticketMapper::toDTO)
+                               .orElseThrow(() -> new TicketNotFoundException("Ticket not found. Id " + id + " does not exist."));
     }
 
     @Transactional

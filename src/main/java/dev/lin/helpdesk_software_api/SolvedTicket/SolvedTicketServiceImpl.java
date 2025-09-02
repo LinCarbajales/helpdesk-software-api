@@ -1,10 +1,11 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+import dev.lin.helpdesk_software_api.exceptions.SolvedTicketNotFoundException;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Optional;
 
 @Service
 public class SolvedTicketServiceImpl implements IReadOnlyService<SolvedTicketResponseDTO> {
@@ -29,8 +30,9 @@ public class SolvedTicketServiceImpl implements IReadOnlyService<SolvedTicketRes
     }
 
     @Override
-    public Optional<SolvedTicketResponseDTO> showById(Long id) {
+    public SolvedTicketResponseDTO showById(Long id) {
         return solvedTicketRepository.findById(id)
-            .map(solvedTicketMapper::toDTO);
+            .map(solvedTicketMapper::toDTO)
+            .orElseThrow(() -> new SolvedTicketNotFoundException("Solved ticket not found. Id " + id + " does not exist."));
     }
 }
