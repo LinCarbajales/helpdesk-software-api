@@ -4,6 +4,7 @@ import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class SolvedTicketServiceImpl implements IReadOnlyService<SolvedTicketResponseDTO> {
@@ -25,5 +26,11 @@ public class SolvedTicketServiceImpl implements IReadOnlyService<SolvedTicketRes
                 .stream()
                 .map(solvedTicketMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<SolvedTicketResponseDTO> showById(Long id) {
+        return solvedTicketRepository.findById(id)
+            .map(solvedTicketMapper::toDTO);
     }
 }
