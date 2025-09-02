@@ -1,7 +1,10 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -19,5 +22,12 @@ public class SolvedTicketController {
     @GetMapping
     public List<SolvedTicketResponseDTO> getAllSolvedTickets() {
         return solvedTicketService.getAllEntities();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SolvedTicketResponseDTO> getSolvedTicketById(@PathVariable Long id) {
+        return solvedTicketService.showById(id)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
