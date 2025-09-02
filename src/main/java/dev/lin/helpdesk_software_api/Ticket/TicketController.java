@@ -28,10 +28,8 @@ public class TicketController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable Long id) {
-        return ticketService.showById(id)
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.notFound().build());
+    public TicketResponseDTO getTicketById(@PathVariable Long id) {
+        return ticketServiceImpl.showById(id);
     }
 
     @PostMapping("")
@@ -48,7 +46,7 @@ public class TicketController {
         @PathVariable Long ticketId,
         @Valid @RequestBody TicketUpdateRequestDTO dtoRequest
     ) {
-        // Llamamos al método específico de la implementación concreta
+
         TicketResponseDTO updatedTicket = ticketServiceImpl.updateTicketStatus(ticketId, dtoRequest);
     
         if (updatedTicket == null) {

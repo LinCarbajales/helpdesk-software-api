@@ -1,9 +1,10 @@
 package dev.lin.helpdesk_software_api.Subject;
 
 import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+import dev.lin.helpdesk_software_api.exceptions.SubjectNotFoundException;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,9 +25,10 @@ public class SubjectServiceImpl implements IReadOnlyService<SubjectResponseDTO> 
     }
 
     @Override
-    public Optional<SubjectResponseDTO> showById(Long id) {
+    public SubjectResponseDTO showById(Long id) {
         return subjectRepository.findById(id)
-                                .map(SubjectMapper::toDTO);
+                                .map(SubjectMapper::toDTO)
+                                .orElseThrow(() -> new SubjectNotFoundException("Subject not found. Id " + id + " does not exist."));
     }
 
 }

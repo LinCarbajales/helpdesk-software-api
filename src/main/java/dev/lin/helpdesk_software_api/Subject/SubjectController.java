@@ -2,7 +2,6 @@ package dev.lin.helpdesk_software_api.Subject;
 
 import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +24,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SubjectResponseDTO> getSubjectById(@PathVariable Long id) {
-        return subjectService.showById(id)
-                             .map(ResponseEntity::ok)
-                             .orElseGet(() -> ResponseEntity.notFound().build());
+    public SubjectResponseDTO getSubjectById(@PathVariable Long id) {
+        return subjectService.showById(id);
     }
 }

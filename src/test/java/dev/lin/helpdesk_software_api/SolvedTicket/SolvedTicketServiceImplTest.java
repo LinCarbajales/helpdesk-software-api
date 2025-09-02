@@ -2,9 +2,11 @@ package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
+import dev.lin.helpdesk_software_api.exceptions.SolvedTicketNotFoundException;
 import dev.lin.helpdesk_software_api.Ticket.TicketEntity;
 import dev.lin.helpdesk_software_api.Ticket.TicketResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,26 +74,23 @@ class SolvedTicketServiceImplTest {
         when(solvedTicketMapper.toDTO(solvedTicket1)).thenReturn(solvedTicketResponseDTO1);
 
         // Act
-        Optional<SolvedTicketResponseDTO> result = solvedTicketService.showById(1L);
+        SolvedTicketResponseDTO result = solvedTicketService.showById(1L);
 
         // Assert
-        assertThat(result.isPresent(), is(true));
-        assertThat(result.get().id(), is(equalTo(1L)));
+        assertThat(result, is(notNullValue()));
+        assertThat(result.id(), is(equalTo(1L)));
         verify(solvedTicketRepository, times(1)).findById(1L);
         verify(solvedTicketMapper, times(1)).toDTO(solvedTicket1);
     }
 
     @Test
-    @DisplayName("Should return an empty optional when solved ticket not found by ID")
-    void showById_ShouldReturnEmptyOptionalWhenNotFound() {
+    @DisplayName("Should throw SolvedTicketNotFoundException when solved ticket not found by ID")
+    void showById_ShouldThrowExceptionWhenNotFound() {
         // Arrange
         when(solvedTicketRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act
-        Optional<SolvedTicketResponseDTO> result = solvedTicketService.showById(1L);
-
-        // Assert
-        assertThat(result.isPresent(), is(false));
+        // Act & Assert
+        assertThrows(SolvedTicketNotFoundException.class, () -> solvedTicketService.showById(1L));
         verify(solvedTicketRepository, times(1)).findById(1L);
         verify(solvedTicketMapper, never()).toDTO(any());
     }
