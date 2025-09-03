@@ -1,21 +1,24 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
-import dev.lin.helpdesk_software_api.Implementations.IGenericService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "${api-endpoint}/tickets")
 public class TicketController {
 
-    private final IGenericService<TicketResponseDTO, TicketRequestDTO> ticketService; // Mantenemos esta inyección
-    private final TicketServiceImpl ticketServiceImpl; // <-- Inyectamos la implementación concreta
+    private final TicketService ticketService;
+    private final TicketServiceImpl ticketServiceImpl;
 
     public TicketController(
-        IGenericService<TicketResponseDTO, TicketRequestDTO> ticketService,
+        TicketService ticketService,
         TicketServiceImpl ticketServiceImpl
     ) {
         this.ticketService = ticketService;

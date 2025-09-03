@@ -1,6 +1,5 @@
-package dev.lin.helpdesk_software_api.SolvedTicket;
+package dev.lin.helpdesk_software_api.dtos;
 
-import dev.lin.helpdesk_software_api.Ticket.TicketResponseDTO;
 import java.time.LocalDateTime;
 
 public record SolvedTicketResponseDTO(

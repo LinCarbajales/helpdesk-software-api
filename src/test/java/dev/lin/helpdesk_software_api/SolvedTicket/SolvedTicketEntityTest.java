@@ -1,5 +1,6 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import dev.lin.helpdesk_software_api.Ticket.TicketEntity;
 import org.junit.jupiter.api.DisplayName;
@@ -17,8 +18,12 @@ public class SolvedTicketEntityTest {
     void onPersist_ShouldSetSolvedAtDate() {
         // Arrange
         SubjectEntity subject = new SubjectEntity("Test Subject");
-        TicketEntity ticket = new TicketEntity(1L, subject, "Test ticket");
-        SolvedTicketEntity solvedTicket = new SolvedTicketEntity(ticket, 2L);
+        // El primer argumento del constructor de TicketEntity es ahora un objeto EmployeeEntity
+        EmployeeEntity mockRequester = new EmployeeEntity("Test Requester", null);
+        TicketEntity ticket = new TicketEntity(mockRequester, subject, "Test ticket");
+        // El segundo argumento del constructor de SolvedTicketEntity es ahora un objeto EmployeeEntity
+        EmployeeEntity mockAttendee = new EmployeeEntity("Test Attendee", null);
+        SolvedTicketEntity solvedTicket = new SolvedTicketEntity(ticket, mockAttendee);
 
         // Act
         ReflectionTestUtils.invokeMethod(solvedTicket, "onPersist");
@@ -33,17 +38,20 @@ public class SolvedTicketEntityTest {
     void solvedTicketEntity_ShouldSetAndGetProperties() {
         // Arrange
         SubjectEntity subject = new SubjectEntity("Another Subject");
-        TicketEntity ticket = new TicketEntity(1L, subject, "Another test ticket");
+        EmployeeEntity mockRequester = new EmployeeEntity("Another Requester", null);
+        TicketEntity ticket = new TicketEntity(mockRequester, subject, "Another test ticket");
         ticket.setId(1L);
 
-        SolvedTicketEntity solvedTicket = new SolvedTicketEntity(ticket, 2L);
+        EmployeeEntity mockAttendee = new EmployeeEntity("Another Attendee", null);
+        SolvedTicketEntity solvedTicket = new SolvedTicketEntity(ticket, mockAttendee);
         solvedTicket.setId(ticket.getId());
         solvedTicket.setSolvedAt(LocalDateTime.of(2025, 1, 1, 10, 0));
 
         // Assert
         assertThat(solvedTicket.getId(), is(equalTo(1L)));
         assertThat(solvedTicket.getTicket(), is(equalTo(ticket)));
-        assertThat(solvedTicket.getAttendeeId(), is(equalTo(2L)));
+        // Se ha cambiado de getAttendeeId() a getAttendee()
+        assertThat(solvedTicket.getAttendee(), is(equalTo(mockAttendee)));
         assertThat(solvedTicket.getSolvedAt(), is(equalTo(LocalDateTime.of(2025, 1, 1, 10, 0))));
     }
 }

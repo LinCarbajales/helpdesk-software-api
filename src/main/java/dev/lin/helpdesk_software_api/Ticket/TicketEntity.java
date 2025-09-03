@@ -2,6 +2,7 @@ package dev.lin.helpdesk_software_api.Ticket;
 
 import java.time.LocalDateTime;
 
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import jakarta.persistence.*;
 
@@ -14,8 +15,9 @@ public class TicketEntity {
     @Column(name = "ticket_id")
     private Long id;
     
-    @Column(name = "requester_id")
-    private Long requesterId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requester_id")
+    private EmployeeEntity requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -23,7 +25,7 @@ public class TicketEntity {
         referencedColumnName = "id_subject",
         nullable = false
     )
-    private SubjectEntity subjectId;
+    private SubjectEntity subject;
 
     @Column(name = "description")
     private String description;
@@ -53,9 +55,9 @@ public class TicketEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public TicketEntity(Long requesterId, SubjectEntity subjectId, String description) {
-        this.requesterId = requesterId;
-        this.subjectId = subjectId;
+    public TicketEntity(EmployeeEntity requester, SubjectEntity subject, String description) {
+        this.requester = requester;
+        this.subject = subject;
         this.description = description;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -66,12 +68,12 @@ public class TicketEntity {
         return id;
     }
 
-    public Long getRequesterId() {
-        return requesterId;
+    public EmployeeEntity getRequester() {
+        return requester;
     }
 
-    public SubjectEntity getSubjectId() {
-        return subjectId;
+    public SubjectEntity getSubject() {
+        return subject;
     }
 
     public String getDescription() {
@@ -95,12 +97,12 @@ public class TicketEntity {
         this.id = id;
     }
 
-    public void setRequesterId(Long requesterId) {
-        this.requesterId = requesterId;
+    public void setRequester(EmployeeEntity requester) {
+        this.requester = requester;
     }
 
-    public void setSubjectId(SubjectEntity subjectId) {
-        this.subjectId = subjectId;
+    public void setSubject(SubjectEntity subject) {
+        this.subject = subject;
     }
 
     public void setDescription(String description) {

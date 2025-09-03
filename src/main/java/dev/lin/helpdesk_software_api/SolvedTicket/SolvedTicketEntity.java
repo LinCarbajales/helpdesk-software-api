@@ -1,6 +1,7 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import dev.lin.helpdesk_software_api.Ticket.TicketEntity;
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -17,17 +18,18 @@ public class SolvedTicketEntity {
     @JoinColumn(name = "ticket_id")
     private TicketEntity ticket;
 
-    @Column(name = "attendee_id")
-    private Long attendeeId; // FK
+    @ManyToOne
+    @JoinColumn(name = "attendee_id")
+    private EmployeeEntity attendee; // FK
 
     @Column(name = "solved_at")
     private LocalDateTime solvedAt;
 
     public SolvedTicketEntity() {}
 
-    public SolvedTicketEntity(TicketEntity ticket, Long attendeeId) {
+    public SolvedTicketEntity(TicketEntity ticket, EmployeeEntity attendee) {
         this.ticket = ticket;
-        this.attendeeId = attendeeId;
+        this.attendee = attendee;
     }
     
     @PrePersist
@@ -52,12 +54,12 @@ public class SolvedTicketEntity {
         this.ticket = ticket;
     }
 
-    public Long getAttendeeId() {
-        return attendeeId;
+    public EmployeeEntity getAttendee() {
+        return attendee;
     }
 
-    public void setAttendeeId(Long attendeeId) {
-        this.attendeeId = attendeeId;
+    public void setAttendee(EmployeeEntity attendee) {
+        this.attendee = attendee;
     }
 
     public LocalDateTime getSolvedAt() {
