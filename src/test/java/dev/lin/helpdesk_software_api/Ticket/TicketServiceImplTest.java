@@ -1,9 +1,14 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
+import dev.lin.helpdesk_software_api.Employee.EmployeeRepository;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketRepository;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectRepository;
+import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +41,13 @@ class TicketServiceImplTest {
     @Mock
     private SubjectRepository subjectRepository;
 
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    private EmployeeEntity mockRequester;
+
+    private EmployeeEntity mockAttendee;
+
     @InjectMocks
     private TicketServiceImpl ticketService;
 
@@ -50,10 +62,17 @@ class TicketServiceImplTest {
         subjectEntity = new SubjectEntity();
         subjectEntity.setId(1L);
 
+        // Se han creado los mocks para los empleados
+        mockRequester = new EmployeeEntity("Requester Name", null);
+        mockRequester.setId(1L);
+        mockAttendee = new EmployeeEntity("Attendee Name", null);
+        mockAttendee.setId(2L);
+
         ticketEntity = new TicketEntity();
         ticketEntity.setId(1L);
-        ticketEntity.setRequesterId(1L);
-        ticketEntity.setSubjectId(subjectEntity);
+        // Se ha cambiado a un objeto EmployeeEntity
+        ticketEntity.setRequester(mockRequester);
+        ticketEntity.setSubject(subjectEntity);
         ticketEntity.setDescription("Test description");
         ticketEntity.setStatus(TicketStatus.OPEN);
         ticketEntity.setCreatedAt(LocalDateTime.now());
@@ -104,6 +123,8 @@ class TicketServiceImplTest {
     void updateTicketStatus_WithValidTransition_ShouldUpdateStatusAndCreateSolvedTicket() {
         // Arrange
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketEntity));
+        // Se ha añadido esta línea para mockear la búsqueda del empleado
+        when(employeeRepository.findById(updateRequest.attendeeId())).thenReturn(Optional.of(mockAttendee));
         when(ticketRepository.save(ticketEntity)).thenReturn(ticketEntity);
         when(ticketMapper.toDTO(ticketEntity)).thenReturn(ticketResponseDTO);
         when(solvedTicketRepository.save(any(SolvedTicketEntity.class))).thenReturn(new SolvedTicketEntity());
@@ -115,6 +136,7 @@ class TicketServiceImplTest {
         assertThat(result, equalTo(ticketResponseDTO));
         assertThat(ticketEntity.getStatus(), equalTo(TicketStatus.ATTENDED));
         verify(ticketRepository, times(1)).findById(1L);
+        verify(employeeRepository, times(1)).findById(updateRequest.attendeeId());
         verify(ticketRepository, times(1)).save(ticketEntity);
         verify(solvedTicketRepository, times(1)).save(any(SolvedTicketEntity.class));
         verify(ticketMapper, times(1)).toDTO(ticketEntity);
@@ -132,6 +154,7 @@ class TicketServiceImplTest {
         // Assert
         assertThat(result, nullValue());
         verify(ticketRepository, times(1)).findById(1L);
+        verify(employeeRepository, never()).findById(anyLong());
         verify(ticketRepository, never()).save(any());
         verify(solvedTicketRepository, never()).save(any());
     }
@@ -148,6 +171,7 @@ class TicketServiceImplTest {
         // Assert
         assertThat(result, nullValue());
         verify(ticketRepository, times(1)).findById(1L);
+        verify(employeeRepository, never()).findById(anyLong());
         verify(ticketRepository, never()).save(any());
         verify(solvedTicketRepository, never()).save(any());
     }
@@ -163,6 +187,7 @@ class TicketServiceImplTest {
         // Assert
         assertThat(result, nullValue());
         verify(ticketRepository, times(1)).findById(1L);
+        verify(employeeRepository, never()).findById(anyLong());
         verify(ticketRepository, never()).save(any());
         verify(solvedTicketRepository, never()).save(any());
     }
@@ -180,6 +205,7 @@ class TicketServiceImplTest {
         // Assert
         assertThat(result, nullValue());
         verify(ticketRepository, times(1)).findById(1L);
+        verify(employeeRepository, never()).findById(anyLong());
         verify(ticketRepository, never()).save(any());
         verify(solvedTicketRepository, never()).save(any());
     }

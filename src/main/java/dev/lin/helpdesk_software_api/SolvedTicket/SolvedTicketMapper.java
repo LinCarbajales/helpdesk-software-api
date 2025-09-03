@@ -1,6 +1,8 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
 import dev.lin.helpdesk_software_api.Ticket.TicketMapper;
+import dev.lin.helpdesk_software_api.dtos.SolvedTicketResponseDTO;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +22,7 @@ public class SolvedTicketMapper {
         return new SolvedTicketResponseDTO(
             solvedTicket.getId(),
             ticketMapper.toDTO(solvedTicket.getTicket()),
-            solvedTicket.getAttendeeId(),
+            solvedTicket.getAttendee().getId(),
             solvedTicket.getSolvedAt()
         );
     }

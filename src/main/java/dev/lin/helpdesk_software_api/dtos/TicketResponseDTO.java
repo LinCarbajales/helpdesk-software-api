@@ -1,8 +1,10 @@
-package dev.lin.helpdesk_software_api.Ticket;
+package dev.lin.helpdesk_software_api.dtos;
 
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import dev.lin.helpdesk_software_api.Ticket.TicketStatus;
 
 public record TicketResponseDTO(
     Long id,

@@ -1,4 +1,4 @@
-package dev.lin.helpdesk_software_api.Ticket;
+package dev.lin.helpdesk_software_api.dtos;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

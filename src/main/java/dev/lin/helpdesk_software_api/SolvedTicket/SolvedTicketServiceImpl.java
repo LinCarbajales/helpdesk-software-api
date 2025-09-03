@@ -1,6 +1,6 @@
 package dev.lin.helpdesk_software_api.SolvedTicket;
 
-import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+import dev.lin.helpdesk_software_api.dtos.SolvedTicketResponseDTO;
 import dev.lin.helpdesk_software_api.exceptions.SolvedTicketNotFoundException;
 
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SolvedTicketServiceImpl implements IReadOnlyService<SolvedTicketResponseDTO> {
+public class SolvedTicketServiceImpl implements SolvedTicketService {
 
     private final SolvedTicketRepository solvedTicketRepository;
     private final SolvedTicketMapper solvedTicketMapper;

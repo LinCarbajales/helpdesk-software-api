@@ -1,5 +1,6 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,10 +17,12 @@ class TicketEntityTest {
 
     private TicketEntity ticketEntity;
     private SubjectEntity mockSubject;
+    private EmployeeEntity mockEmployee;
 
     @BeforeEach
     void setUp() {
         mockSubject = new SubjectEntity();
+        mockEmployee = new EmployeeEntity("Test User", null);
         ticketEntity = new TicketEntity();
     }
 
@@ -35,8 +38,8 @@ class TicketEntityTest {
 
             // Then
             assertThat(ticket.getId(), is(nullValue()));
-            assertThat(ticket.getRequesterId(), is(nullValue()));
-            assertThat(ticket.getSubjectId(), is(nullValue()));
+            assertThat(ticket.getRequester(), is(nullValue()));
+            assertThat(ticket.getSubject(), is(nullValue()));
             assertThat(ticket.getDescription(), is(nullValue()));
             assertThat(ticket.getStatus(), is(equalTo(TicketStatus.OPEN)));
             assertThat(ticket.getCreatedAt(), is(nullValue()));
@@ -47,16 +50,16 @@ class TicketEntityTest {
         @DisplayName("Should create TicketEntity with parameterized constructor")
         void shouldCreateTicketEntityWithParameters() {
             // Given
-            Long requesterId = 1L;
             String description = "Test description";
             LocalDateTime beforeCreation = LocalDateTime.now();
 
             // When
-            TicketEntity ticket = new TicketEntity(requesterId, mockSubject, description);
+            // Se ha cambiado de Long a EmployeeEntity
+            TicketEntity ticket = new TicketEntity(mockEmployee, mockSubject, description);
 
             // Then
-            assertThat(ticket.getRequesterId(), is(equalTo(requesterId)));
-            assertThat(ticket.getSubjectId(), is(equalTo(mockSubject)));
+            assertThat(ticket.getRequester(), is(equalTo(mockEmployee)));
+            assertThat(ticket.getSubject(), is(equalTo(mockSubject)));
             assertThat(ticket.getDescription(), is(equalTo(description)));
             assertThat(ticket.getStatus(), is(equalTo(TicketStatus.OPEN)));
             assertThat(ticket.getCreatedAt(), is(notNullValue()));
@@ -84,26 +87,24 @@ class TicketEntityTest {
         }
 
         @Test
-        @DisplayName("Should set and get requesterId correctly")
-        void shouldSetAndGetRequesterId() {
-            // Given
-            Long requesterId = 456L;
-
+        @DisplayName("Should set and get requester correctly")
+        void shouldSetAndGetRequester() {
             // When
-            ticketEntity.setRequesterId(requesterId);
+            // Se ha cambiado a un objeto EmployeeEntity
+            ticketEntity.setRequester(mockEmployee);
 
             // Then
-            assertThat(ticketEntity.getRequesterId(), is(equalTo(requesterId)));
+            assertThat(ticketEntity.getRequester(), is(equalTo(mockEmployee)));
         }
 
         @Test
-        @DisplayName("Should set and get subjectId correctly")
+        @DisplayName("Should set and get subject correctly")
         void shouldSetAndGetSubjectId() {
             // When
-            ticketEntity.setSubjectId(mockSubject);
+            ticketEntity.setSubject(mockSubject);
 
             // Then
-            assertThat(ticketEntity.getSubjectId(), is(equalTo(mockSubject)));
+            assertThat(ticketEntity.getSubject(), is(equalTo(mockSubject)));
         }
 
         @Test

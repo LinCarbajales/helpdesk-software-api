@@ -5,10 +5,13 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import dev.lin.helpdesk_software_api.exceptions.SolvedTicketNotFoundException;
 import dev.lin.helpdesk_software_api.Ticket.TicketEntity;
-import dev.lin.helpdesk_software_api.Ticket.TicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.SolvedTicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,17 +37,23 @@ class SolvedTicketServiceImplTest {
 
     private SolvedTicketEntity solvedTicket1;
     private SolvedTicketResponseDTO solvedTicketResponseDTO1;
+    private EmployeeEntity mockAttendee;
 
     @BeforeEach
     void setUp() {
         SubjectEntity subject1 = new SubjectEntity("Hardware Issue");
-        TicketEntity ticket1 = new TicketEntity(1L, subject1, "Ticket 1");
+        TicketEntity ticket1 = new TicketEntity(null, subject1, "Ticket 1");
         ticket1.setId(1L);
 
-        solvedTicket1 = new SolvedTicketEntity(ticket1, 2L);
+        mockAttendee = new EmployeeEntity("John Doe", null);
+        mockAttendee.setId(2L);
+        
+        // Se ha modificado el constructor para usar EmployeeEntity en lugar de Long
+        solvedTicket1 = new SolvedTicketEntity(ticket1, mockAttendee);
         solvedTicket1.setId(1L);
 
         TicketResponseDTO ticketResponseDTO1 = new TicketResponseDTO(1L, 1L, 1L, "Ticket 1", null, null, null);
+        // Se ha modificado el constructor del DTO para usar el ID del empleado
         solvedTicketResponseDTO1 = new SolvedTicketResponseDTO(1L, ticketResponseDTO1, 2L, null);
     }
 

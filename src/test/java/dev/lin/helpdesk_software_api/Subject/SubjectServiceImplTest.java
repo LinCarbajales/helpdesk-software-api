@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import dev.lin.helpdesk_software_api.dtos.SubjectResponseDTO;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,14 +41,11 @@ class SubjectServiceImplTest {
     @Test
     @DisplayName("Should return a list of all subjects")
     void testGetAllEntities_ShouldReturnAllSubjects() {
-        // Simular el comportamiento del repositorio:
-        // cuando se llame a findAll(), devolver la lista de entidades de prueba.
+
         when(subjectRepository.findAll()).thenReturn(Arrays.asList(subjectEntity1, subjectEntity2));
 
-        // Llamar al método del servicio que se está probando
         List<SubjectResponseDTO> result = subjectService.getAllEntities();
 
-        // Verificar el resultado con Hamcrest
         assertThat(result, is(notNullValue()));
         assertThat(result, hasSize(2));
         assertThat(result.get(0).name(), is(equalTo("Software Issue")));
@@ -55,13 +55,11 @@ class SubjectServiceImplTest {
     @Test
     @DisplayName("Should return an empty list when no subjects are found")
     void testGetAllEntities_ShouldReturnEmptyList() {
-        // Simular el comportamiento del repositorio:
-        // cuando se llame a findAll(), devolver una lista vacía.
+
         when(subjectRepository.findAll()).thenReturn(List.of());
 
         List<SubjectResponseDTO> result = subjectService.getAllEntities();
 
-        // Verificar el resultado con Hamcrest
         assertThat(result, is(empty()));
     }
 }

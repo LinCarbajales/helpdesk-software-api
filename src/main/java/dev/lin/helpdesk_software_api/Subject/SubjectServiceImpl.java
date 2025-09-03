@@ -1,6 +1,6 @@
 package dev.lin.helpdesk_software_api.Subject;
 
-import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+import dev.lin.helpdesk_software_api.dtos.SubjectResponseDTO;
 import dev.lin.helpdesk_software_api.exceptions.SubjectNotFoundException;
 
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SubjectServiceImpl implements IReadOnlyService<SubjectResponseDTO> {
+public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
     

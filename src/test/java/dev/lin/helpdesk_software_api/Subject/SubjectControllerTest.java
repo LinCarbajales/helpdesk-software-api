@@ -1,7 +1,9 @@
 package dev.lin.helpdesk_software_api.Subject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.lin.helpdesk_software_api.Implementations.IReadOnlyService;
+
+import dev.lin.helpdesk_software_api.dtos.SubjectResponseDTO;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class SubjectControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private IReadOnlyService<SubjectResponseDTO> subjectService;
+    private SubjectService subjectService;
 
     @Autowired
     ObjectMapper mapper;
