@@ -4,6 +4,7 @@ import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
 import dev.lin.helpdesk_software_api.Employee.EmployeeRepository;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
 import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketRepository;
+import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
 import dev.lin.helpdesk_software_api.exceptions.EmployeeNotFoundException;
@@ -53,6 +54,11 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.findById(id)
                                .map(ticketMapper::toDTO)
                                .orElseThrow(() -> new TicketNotFoundException("Ticket not found. Id " + id + " does not exist."));
+    }
+
+    @Override
+    public List<CombinedTicketDTO> getAllCombinedTickets() {
+        return ticketRepository.findAllCombinedTickets();
     }
 
     @Transactional
