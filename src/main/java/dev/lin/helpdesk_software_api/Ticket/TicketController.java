@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
 
@@ -33,6 +34,12 @@ public class TicketController {
     @GetMapping("/{id}")
     public TicketResponseDTO getTicketById(@PathVariable Long id) {
         return ticketServiceImpl.showById(id);
+    }
+
+    @GetMapping("/combined")
+    public ResponseEntity<List<CombinedTicketDTO>> getAllCombinedTickets() {
+        List<CombinedTicketDTO> combinedTickets = ticketService.getAllCombinedTickets();
+        return ResponseEntity.ok(combinedTickets);
     }
 
     @PostMapping("")
