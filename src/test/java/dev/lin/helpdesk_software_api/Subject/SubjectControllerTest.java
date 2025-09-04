@@ -3,6 +3,7 @@ package dev.lin.helpdesk_software_api.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.lin.helpdesk_software_api.dtos.SubjectResponseDTO;
+import dev.lin.helpdesk_software_api.exceptions.SubjectNotFoundException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SubjectController.class)
@@ -49,5 +51,47 @@ public class SubjectControllerTest {
 
         assertThat(response.getStatus(), is(equalTo(200)));
         assertThat(response.getContentAsString(), is(equalTo(json)));
+    }
+
+    @Test
+    @DisplayName("Should return a specific subject by ID")
+    void testShowById_ShouldReturnCorrectSubject() throws Exception {
+        // Arrange
+        Long subjectId = 1L;
+        SubjectResponseDTO mockSubject = new SubjectResponseDTO(subjectId, "Hardware Issue");
+        String json = mapper.writeValueAsString(mockSubject);
+
+        when(subjectService.showById(subjectId)).thenReturn(mockSubject);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/subjects/{id}", subjectId))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
+    }
+
+    @Test
+    @DisplayName("Should return 404 Not Found when subject is not found by ID")
+    void testShowById_ShouldReturnNotFoundForInvalidId() throws Exception {
+        // Arrange
+        Long nonExistentId = 99L;
+        when(subjectService.showById(nonExistentId))
+                .thenThrow(new SubjectNotFoundException("Subject not found. Id " + nonExistentId + " does not exist."));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/subjects/{id}", nonExistentId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return an empty list when no subjects exist")
+    void testIndex_ShouldReturnEmptyListWhenNoSubjectsExist() throws Exception {
+        // Arrange
+        when(subjectService.getAllEntities()).thenReturn(List.of());
+        String json = "[]";
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/subjects"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
     }
 }

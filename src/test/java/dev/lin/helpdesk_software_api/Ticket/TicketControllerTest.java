@@ -1,130 +1,205 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketEditDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketStatusUpdateDTO;
+import dev.lin.helpdesk_software_api.exceptions.TicketNotFoundException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = TicketController.class)
-class TicketControllerTest {
+public class TicketControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean
+    private ITicketService ticketService;
+
     @Autowired
     ObjectMapper mapper;
 
-    @MockitoBean
-    private TicketServiceImpl ticketServiceImpl;
-    private TicketResponseDTO ticketResponseDTO1;
-    private TicketResponseDTO ticketResponseDTO2;
-    private TicketRequestDTO ticketRequestDTO;
-    private TicketStatusUpdateDTO updateRequestDTO;
-
-    @BeforeEach
-    void setUp() {
-        // Datos de prueba
-        ticketResponseDTO1 = new TicketResponseDTO(
-            1L, 10L, 20L, "Problema con la impresora",
-            TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now()
-        );
-        ticketResponseDTO2 = new TicketResponseDTO(
-            2L, 11L, 21L, "Lentitud del sistema",
-            TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now()
-        );
-        ticketRequestDTO = new TicketRequestDTO(1L, 2L, "Fallo en el software");
-        updateRequestDTO = new TicketStatusUpdateDTO(TicketStatus.ATTENDED, 3L);
-    }
-
     @Test
     @DisplayName("Should return all tickets")
-    void testIndex_ShouldReturnAllTickets() throws Exception {
-        List<TicketResponseDTO> tickets = Arrays.asList(ticketResponseDTO1, ticketResponseDTO2);
-        String json = mapper.writeValueAsString(tickets);
+    void testGetAllTickets_ShouldReturnAllTickets() throws Exception {
+        // Arrange: Mock data for the response DTOs
+        TicketResponseDTO ticket1 = new TicketResponseDTO(1L, 1L, 1L, "Test Description 1", TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now());
+        TicketResponseDTO ticket2 = new TicketResponseDTO(2L, 2L, 2L, "Test Description 2", TicketStatus.ATTENDED, LocalDateTime.now(), LocalDateTime.now());
+        List<TicketResponseDTO> mockTickets = List.of(ticket1, ticket2);
+        String json = mapper.writeValueAsString(mockTickets);
 
-        when(ticketServiceImpl.getAllEntities()).thenReturn(tickets);
-
+        when(ticketService.getAllEntities()).thenReturn(mockTickets);
         MockHttpServletResponse response = mockMvc.perform(get("/api/v1/tickets"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
 
+        // Assert
         assertThat(response.getStatus(), is(equalTo(200)));
         assertThat(response.getContentAsString(), is(equalTo(json)));
     }
 
     @Test
-    void testStore_ShouldReturnStatus201() throws Exception {
-        String json = mapper.writeValueAsString(ticketRequestDTO);
+    @DisplayName("Should return a specific ticket by ID")
+    void testGetTicketById_ShouldReturnCorrectTicket() throws Exception {
+        // Arrange
+        Long ticketId = 1L;
+        TicketResponseDTO mockTicket = new TicketResponseDTO(ticketId, 1L, 1L, "Test Description", TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now());
+        String json = mapper.writeValueAsString(mockTicket);
 
-        when(ticketServiceImpl.storeEntity(any(TicketRequestDTO.class))).thenReturn(ticketResponseDTO1);
+        when(ticketService.showById(ticketId)).thenReturn(mockTicket);
 
-        MockHttpServletResponse response = mockMvc
-                .perform(post("/api/v1/tickets").content(json).contentType("application/json"))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse();
-
-        assertThat(response.getContentAsString(), containsString(ticketResponseDTO1.description()));
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/tickets/{id}", ticketId))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
     }
 
     @Test
-    void testStoreTicket_ShouldReturnStatus400_IfDescriptionIsBlank() throws Exception {
-        TicketRequestDTO dto = new TicketRequestDTO(1L, 1L, "");
-        String json = mapper.writeValueAsString(dto);
+    @DisplayName("Should return 404 Not Found when ticket is not found by ID")
+    void testGetTicketById_ShouldReturnNotFoundForInvalidId() throws Exception {
+        // Arrange
+        Long nonExistentId = 99L;
+        when(ticketService.showById(nonExistentId))
+                .thenThrow(new TicketNotFoundException("Ticket not found. Id " + nonExistentId + " does not exist."));
 
-        mockMvc.perform(post("/api/v1/tickets").content(json).contentType("application/json"))
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/tickets/{id}", nonExistentId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Should return a list of combined tickets")
+    void testGetAllCombinedTickets_ShouldReturnCombinedTickets() throws Exception {
+        // Arrange
+        CombinedTicketDTO combinedTicket1 = new CombinedTicketDTO(1L, "Test description 1", "Requester 1", "Attendee 1", TicketStatus.ATTENDED, LocalDateTime.now(), LocalDateTime.now());
+        List<CombinedTicketDTO> mockCombinedTickets = List.of(combinedTicket1);
+        String json = mapper.writeValueAsString(mockCombinedTickets);
+
+        when(ticketService.getAllCombinedTickets()).thenReturn(mockCombinedTickets);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/v1/tickets/combined"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(json));
+    }
+
+    @Test
+    @DisplayName("Should create a new ticket")
+    void testStoreEntity_ShouldCreateNewTicket() throws Exception {
+        // Arrange
+        TicketRequestDTO requestDTO = new TicketRequestDTO(1L, 1L, "New ticket description");
+        TicketResponseDTO responseDTO = new TicketResponseDTO(1L, 1L, 1L, "New ticket description", TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now());
+
+        when(ticketService.storeEntity(any(TicketRequestDTO.class))).thenReturn(responseDTO);
+
+        // Act & Assert
+        mockMvc.perform(post("/api/v1/tickets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(requestDTO)))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(mapper.writeValueAsString(responseDTO)));
+    }
+
+    @Test
+    @DisplayName("Should update ticket status and return OK")
+    void testUpdateTicketStatus_ShouldUpdateStatusAndReturnOk() throws Exception {
+        // Arrange
+        Long ticketId = 1L;
+        TicketStatusUpdateDTO updateDTO = new TicketStatusUpdateDTO(TicketStatus.ATTENDED, 2L);
+        TicketResponseDTO updatedTicket = new TicketResponseDTO(ticketId, 1L, 1L, "Test Description", TicketStatus.ATTENDED, LocalDateTime.now(), LocalDateTime.now());
+
+        when(ticketService.updateTicketStatus(eq(ticketId), any(TicketStatusUpdateDTO.class))).thenReturn(updatedTicket);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/v1/tickets/{id}/status", ticketId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(updateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(updatedTicket)));
+    }
+
+    @Test
+    @DisplayName("Should return Bad Request when status update fails")
+    void testUpdateTicketStatus_ShouldReturnBadRequestOnFailure() throws Exception {
+        // Arrange
+        Long ticketId = 1L;
+        TicketStatusUpdateDTO updateDTO = new TicketStatusUpdateDTO(TicketStatus.ATTENDED, 2L);
+
+        when(ticketService.updateTicketStatus(eq(ticketId), any(TicketStatusUpdateDTO.class))).thenReturn(null);
+
+        // Act & Assert
+        mockMvc.perform(patch("/api/v1/tickets/{id}/status", ticketId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(updateDTO)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testStoreTicket_ShouldReturnNoContent_IfServiceDoesNotReturnAnyValue() throws Exception {
-        String json = mapper.writeValueAsString(ticketRequestDTO);
+    @DisplayName("Should edit and update a ticket")
+    void testEditTicket_ShouldEditAndReturnUpdatedTicket() throws Exception {
+        // Arrange
+        Long ticketId = 1L;
+        TicketEditDTO editDTO = new TicketEditDTO("Edited description", 1L, 1L);
+        TicketResponseDTO updatedTicket = new TicketResponseDTO(ticketId, 1L, 1L, "Edited description", TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now());
 
-        when(ticketServiceImpl.storeEntity(any(TicketRequestDTO.class))).thenReturn(null);
+        when(ticketService.updateTicket(eq(ticketId), any(TicketEditDTO.class))).thenReturn(updatedTicket);
 
-        mockMvc.perform(post("/api/v1/tickets").content(json).contentType("application/json"))
-                .andExpect(status().isNoContent());
+        // Act & Assert
+        mockMvc.perform(patch("/api/v1/tickets/{id}", ticketId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(editDTO)))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(updatedTicket)));
     }
 
     @Test
-    void testUpdateTicketStatus_ShouldReturnStatus200_And_UpdateTicket() throws Exception {
+    @DisplayName("Should delete a ticket and return No Content")
+    void testDeleteTicket_ShouldDeleteTicketAndReturnNoContent() throws Exception {
+        // Arrange
         Long ticketId = 1L;
-        TicketResponseDTO updatedDTO = new TicketResponseDTO(
-            1L, 10L, 20L, "Problema con la impresora",
-            TicketStatus.ATTENDED, LocalDateTime.now(), LocalDateTime.now()
-        );
+        doNothing().when(ticketService).deleteTicket(ticketId);
 
-        when(ticketServiceImpl.updateTicketStatus(any(Long.class), any(TicketStatusUpdateDTO.class)))
-            .thenReturn(updatedDTO);
+        // Act & Assert
+        mockMvc.perform(delete("/api/v1/tickets/{id}", ticketId))
+                .andExpect(status().isNoContent());
+        
+        // Verify that the delete method was called exactly once
+        verify(ticketService, times(1)).deleteTicket(ticketId);
+    }
+    
+    @Test
+    @DisplayName("Should return 404 Not Found when deleting a non-existent ticket")
+    void testDeleteTicket_ShouldReturnNotFoundForInvalidId() throws Exception {
+        // Arrange
+        Long nonExistentId = 99L;
+        doThrow(new TicketNotFoundException("Ticket not found.")).when(ticketService).deleteTicket(nonExistentId);
 
-        MockHttpServletResponse response = mockMvc.perform(patch("/api/v1/tickets/{id}", ticketId)
-                .content(mapper.writeValueAsString(updateRequestDTO))
-                .contentType("application/json"))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse();
+        // Act & Assert
+        mockMvc.perform(delete("/api/v1/tickets/{id}", nonExistentId))
+                .andExpect(status().isNotFound());
 
-        assertThat(response.getContentAsString(), containsString(updatedDTO.status().name()));
+        // Verify that the delete method was called
+        verify(ticketService, times(1)).deleteTicket(nonExistentId);
     }
 }
