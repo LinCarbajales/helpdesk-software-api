@@ -1,232 +1,130 @@
 package dev.lin.helpdesk_software_api.Ticket;
 
 import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
+import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("TicketEntity Tests")
 class TicketEntityTest {
 
     private TicketEntity ticketEntity;
+    private EmployeeEntity mockRequester;
     private SubjectEntity mockSubject;
-    private EmployeeEntity mockEmployee;
 
     @BeforeEach
     void setUp() {
-        mockSubject = new SubjectEntity();
-        mockEmployee = new EmployeeEntity("Test User", null);
+        mockRequester = new EmployeeEntity("John Doe", null);
+        mockSubject = new SubjectEntity("Test Subject");
         ticketEntity = new TicketEntity();
     }
 
     @Nested
-    @DisplayName("Constructor Tests")
+    @DisplayName("Constructor and Getters/Setters Tests")
     class ConstructorTests {
 
         @Test
         @DisplayName("Should create empty TicketEntity with default constructor")
         void shouldCreateEmptyTicketEntity() {
-            // Given & When
             TicketEntity ticket = new TicketEntity();
 
-            // Then
             assertThat(ticket.getId(), is(nullValue()));
             assertThat(ticket.getRequester(), is(nullValue()));
             assertThat(ticket.getSubject(), is(nullValue()));
             assertThat(ticket.getDescription(), is(nullValue()));
-            assertThat(ticket.getStatus(), is(equalTo(TicketStatus.OPEN)));
+            assertThat(ticket.getSolvedTicket(), is(nullValue()));
+            assertThat(ticket.getStatus(), is(nullValue()));
             assertThat(ticket.getCreatedAt(), is(nullValue()));
             assertThat(ticket.getUpdatedAt(), is(nullValue()));
         }
 
         @Test
-        @DisplayName("Should create TicketEntity with parameterized constructor")
-        void shouldCreateTicketEntityWithParameters() {
-            // Given
-            String description = "Test description";
-            LocalDateTime beforeCreation = LocalDateTime.now();
+        @DisplayName("Should create TicketEntity with specified fields")
+        void shouldCreateTicketEntityWithFields() {
+            String description = "Test ticket description";
+            TicketEntity ticket = new TicketEntity(mockRequester, mockSubject, description);
 
-            // When
-            // Se ha cambiado de Long a EmployeeEntity
-            TicketEntity ticket = new TicketEntity(mockEmployee, mockSubject, description);
-
-            // Then
-            assertThat(ticket.getRequester(), is(equalTo(mockEmployee)));
+            assertThat(ticket.getRequester(), is(equalTo(mockRequester)));
             assertThat(ticket.getSubject(), is(equalTo(mockSubject)));
             assertThat(ticket.getDescription(), is(equalTo(description)));
-            assertThat(ticket.getStatus(), is(equalTo(TicketStatus.OPEN)));
-            assertThat(ticket.getCreatedAt(), is(notNullValue()));
-            assertThat(ticket.getUpdatedAt(), is(notNullValue()));
-            assertThat(ticket.getCreatedAt(), is(greaterThanOrEqualTo(beforeCreation)));
-            assertThat(ticket.getUpdatedAt(), is(greaterThanOrEqualTo(beforeCreation)));
-        }
-    }
-
-    @Nested
-    @DisplayName("Getter and Setter Tests")
-    class GetterSetterTests {
-
-        @Test
-        @DisplayName("Should set and get id correctly")
-        void shouldSetAndGetId() {
-            // Given
-            Long id = 123L;
-
-            // When
-            ticketEntity.setId(id);
-
-            // Then
-            assertThat(ticketEntity.getId(), is(equalTo(id)));
+            assertThat(ticket.getSolvedTicket(), is(nullValue()));
         }
 
         @Test
-        @DisplayName("Should set and get requester correctly")
-        void shouldSetAndGetRequester() {
-            // When
-            // Se ha cambiado a un objeto EmployeeEntity
-            ticketEntity.setRequester(mockEmployee);
-
-            // Then
-            assertThat(ticketEntity.getRequester(), is(equalTo(mockEmployee)));
-        }
-
-        @Test
-        @DisplayName("Should set and get subject correctly")
-        void shouldSetAndGetSubjectId() {
-            // When
-            ticketEntity.setSubject(mockSubject);
-
-            // Then
-            assertThat(ticketEntity.getSubject(), is(equalTo(mockSubject)));
-        }
-
-        @Test
-        @DisplayName("Should set and get description correctly")
-        void shouldSetAndGetDescription() {
-            // Given
-            String description = "Test ticket description";
-
-            // When
-            ticketEntity.setDescription(description);
-
-            // Then
-            assertThat(ticketEntity.getDescription(), is(equalTo(description)));
-        }
-
-        @Test
-        @DisplayName("Should set and get status correctly")
-        void shouldSetAndGetStatus() {
-            // Given
-            TicketStatus status = TicketStatus.ATTENDED;
-
-            // When
-            ticketEntity.setStatus(status);
-
-            // Then
-            assertThat(ticketEntity.getStatus(), is(equalTo(status)));
-        }
-
-        @Test
-        @DisplayName("Should set and get createdAt correctly")
-        void shouldSetAndGetCreatedAt() {
-            // Given
+        @DisplayName("Should set and get all properties correctly")
+        void ticketEntity_ShouldSetAndGetProperties() {
+            // Arrange
+            Long id = 1L;
+            String description = "Another test description";
+            TicketStatus status = TicketStatus.OPEN;
             LocalDateTime createdAt = LocalDateTime.now();
+            LocalDateTime updatedAt = createdAt.plusHours(1);
+            SolvedTicketEntity solvedTicket = new SolvedTicketEntity();
 
-            // When
+            // Act
+            ticketEntity.setId(id);
+            ticketEntity.setRequester(mockRequester);
+            ticketEntity.setSubject(mockSubject);
+            ticketEntity.setDescription(description);
+            ticketEntity.setStatus(status);
             ticketEntity.setCreatedAt(createdAt);
-
-            // Then
-            assertThat(ticketEntity.getCreatedAt(), is(equalTo(createdAt)));
-        }
-
-        @Test
-        @DisplayName("Should set and get updatedAt correctly")
-        void shouldSetAndGetUpdatedAt() {
-            // Given
-            LocalDateTime updatedAt = LocalDateTime.now();
-
-            // When
             ticketEntity.setUpdatedAt(updatedAt);
+            ticketEntity.setSolvedTicket(solvedTicket);
 
-            // Then
-            assertThat(ticketEntity.getUpdatedAt(), is(equalTo(updatedAt)));
+            // Assert
+            assertEquals(id, ticketEntity.getId());
+            assertEquals(mockRequester, ticketEntity.getRequester());
+            assertEquals(mockSubject, ticketEntity.getSubject());
+            assertEquals(description, ticketEntity.getDescription());
+            assertEquals(status, ticketEntity.getStatus());
+            assertEquals(createdAt, ticketEntity.getCreatedAt());
+            assertEquals(updatedAt, ticketEntity.getUpdatedAt());
+            assertEquals(solvedTicket, ticketEntity.getSolvedTicket());
         }
     }
 
     @Nested
-    @DisplayName("JPA Lifecycle Tests")
-    class JpaLifecycleTests {
+    @DisplayName("Lifecycle Callbacks Tests")
+    class LifecycleTests {
 
         @Test
-        @DisplayName("Should set timestamps on create")
-        void shouldSetTimestampsOnCreate() {
-            // Given
-            LocalDateTime beforeCreate = LocalDateTime.now();
-
-            // When
-            ticketEntity.onCreate();
+        @DisplayName("Should initialize createdAt, updatedAt and status on creation")
+        void onCreate_ShouldSetInitialValues() {
+            // Given & When
+            ReflectionTestUtils.invokeMethod(ticketEntity, "onCreate");
 
             // Then
             assertThat(ticketEntity.getCreatedAt(), is(notNullValue()));
             assertThat(ticketEntity.getUpdatedAt(), is(notNullValue()));
-            assertThat(ticketEntity.getCreatedAt(), is(greaterThanOrEqualTo(beforeCreate)));
-            assertThat(ticketEntity.getUpdatedAt(), is(greaterThanOrEqualTo(beforeCreate)));
+            assertThat(ticketEntity.getStatus(), is(equalTo(TicketStatus.OPEN)));
         }
 
         @Test
-        @DisplayName("Should update timestamp on update")
-        void shouldUpdateTimestampOnUpdate() {
+        @DisplayName("Should update updatedAt on update and keep createdAt unchanged")
+        void onUpdate_ShouldUpdateUpdatedAt() {
             // Given
-            LocalDateTime initialTime = LocalDateTime.now().minusHours(1);
+            LocalDateTime initialTime = LocalDateTime.now().minusMinutes(5);
             ticketEntity.setCreatedAt(initialTime);
             ticketEntity.setUpdatedAt(initialTime);
             LocalDateTime beforeUpdate = LocalDateTime.now();
 
             // When
-            ticketEntity.onUpdate();
+            ReflectionTestUtils.invokeMethod(ticketEntity, "onUpdate");
 
             // Then
-            assertThat(ticketEntity.getCreatedAt(), is(equalTo(initialTime))); // Should remain unchanged
+            assertThat(ticketEntity.getCreatedAt(), is(equalTo(initialTime)));
             assertThat(ticketEntity.getUpdatedAt(), is(notNullValue()));
             assertThat(ticketEntity.getUpdatedAt(), is(greaterThanOrEqualTo(beforeUpdate)));
-            assertThat(ticketEntity.getUpdatedAt(), is(greaterThan(initialTime)));
-        }
-
-        @Test
-        @DisplayName("Should not modify createdAt on update")
-        void shouldNotModifyCreatedAtOnUpdate() {
-            // Given
-            LocalDateTime originalCreatedAt = LocalDateTime.now().minusDays(1);
-            ticketEntity.setCreatedAt(originalCreatedAt);
-            ticketEntity.setUpdatedAt(originalCreatedAt);
-
-            // When
-            ticketEntity.onUpdate();
-
-            // Then
-            assertThat(ticketEntity.getCreatedAt(), is(equalTo(originalCreatedAt)));
-        }
-    }
-
-    @Nested
-    @DisplayName("Default Values Tests")
-    class DefaultValuesTests {
-
-        @Test
-        @DisplayName("Should have OPEN status as default")
-        void shouldHaveOpenStatusAsDefault() {
-            // Given & When
-            TicketEntity ticket = new TicketEntity();
-
-            // Then
-            assertThat(ticket.getStatus(), is(equalTo(TicketStatus.OPEN)));
         }
     }
 }
