@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SubjectServiceImpl implements SubjectService {
+public class SubjectServiceImpl implements ISubjectService {
 
     private final SubjectRepository subjectRepository;
     

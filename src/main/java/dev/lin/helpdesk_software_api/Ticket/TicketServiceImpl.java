@@ -7,6 +7,7 @@ import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketRepository;
 import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
 import dev.lin.helpdesk_software_api.exceptions.EmployeeNotFoundException;
 import dev.lin.helpdesk_software_api.exceptions.TicketNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class TicketServiceImpl implements TicketService {
+public class TicketServiceImpl implements ITicketService {
 
     private final TicketRepository ticketRepository;
     private final SolvedTicketRepository solvedTicketRepository;

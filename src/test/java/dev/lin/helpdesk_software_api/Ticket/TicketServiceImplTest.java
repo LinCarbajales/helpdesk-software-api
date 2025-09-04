@@ -8,6 +8,7 @@ import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectRepository;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

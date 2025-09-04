@@ -27,7 +27,7 @@ public class SubjectControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private SubjectService subjectService;
+    private ISubjectService subjectService;
 
     @Autowired
     ObjectMapper mapper;

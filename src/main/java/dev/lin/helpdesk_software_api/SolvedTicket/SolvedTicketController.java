@@ -14,9 +14,9 @@ import java.util.List;
 @RequestMapping(path = "${api-endpoint}/solved_tickets")
 public class SolvedTicketController {
 
-    private final SolvedTicketService solvedTicketService;
+    private final ISolvedTicketService solvedTicketService;
 
-    public SolvedTicketController(SolvedTicketService solvedTicketService) {
+    public SolvedTicketController(ISolvedTicketService solvedTicketService) {
         this.solvedTicketService = solvedTicketService;
     }
 
