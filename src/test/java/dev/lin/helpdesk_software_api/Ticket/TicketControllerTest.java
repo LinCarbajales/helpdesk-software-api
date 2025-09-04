@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
-import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketStatusUpdateDTO;
 
 @WebMvcTest(controllers = TicketController.class)
 class TicketControllerTest {
@@ -39,7 +39,7 @@ class TicketControllerTest {
     private TicketResponseDTO ticketResponseDTO1;
     private TicketResponseDTO ticketResponseDTO2;
     private TicketRequestDTO ticketRequestDTO;
-    private TicketUpdateRequestDTO updateRequestDTO;
+    private TicketStatusUpdateDTO updateRequestDTO;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +53,7 @@ class TicketControllerTest {
             TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now()
         );
         ticketRequestDTO = new TicketRequestDTO(1L, 2L, "Fallo en el software");
-        updateRequestDTO = new TicketUpdateRequestDTO(TicketStatus.ATTENDED, 3L);
+        updateRequestDTO = new TicketStatusUpdateDTO(TicketStatus.ATTENDED, 3L);
     }
 
     @Test
@@ -115,7 +115,7 @@ class TicketControllerTest {
             TicketStatus.ATTENDED, LocalDateTime.now(), LocalDateTime.now()
         );
 
-        when(ticketServiceImpl.updateTicketStatus(any(Long.class), any(TicketUpdateRequestDTO.class)))
+        when(ticketServiceImpl.updateTicketStatus(any(Long.class), any(TicketStatusUpdateDTO.class)))
             .thenReturn(updatedDTO);
 
         MockHttpServletResponse response = mockMvc.perform(patch("/api/v1/tickets/{id}", ticketId)

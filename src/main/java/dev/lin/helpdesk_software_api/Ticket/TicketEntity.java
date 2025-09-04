@@ -32,7 +32,7 @@ public class TicketEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private TicketStatus status = TicketStatus.OPEN;
+    private TicketStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -48,6 +48,7 @@ public class TicketEntity {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.status = TicketStatus.OPEN;
     }
 
     @PreUpdate

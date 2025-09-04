@@ -8,7 +8,7 @@ import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectRepository;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
-import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketStatusUpdateDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class TicketServiceImplTest {
     private TicketRequestDTO ticketRequestDTO;
     private TicketResponseDTO ticketResponseDTO;
     private SubjectEntity subjectEntity;
-    private TicketUpdateRequestDTO updateRequest;
+    private TicketStatusUpdateDTO updateRequest;
 
     @BeforeEach
     void setUp() {
@@ -83,7 +83,7 @@ class TicketServiceImplTest {
         ticketResponseDTO = new TicketResponseDTO(1L, 1L, 1L, "Test description", 
             TicketStatus.OPEN, LocalDateTime.now(), LocalDateTime.now());
 
-        updateRequest = new TicketUpdateRequestDTO(TicketStatus.ATTENDED, 2L);
+        updateRequest = new TicketStatusUpdateDTO(TicketStatus.ATTENDED, 2L);
     }
 
     @Test
@@ -163,7 +163,7 @@ class TicketServiceImplTest {
     @Test
     void updateTicketStatus_WithNonAttendedStatus_ShouldReturnNull() {
         // Arrange
-        TicketUpdateRequestDTO invalidUpdate = new TicketUpdateRequestDTO(TicketStatus.OPEN, 2L);
+        TicketStatusUpdateDTO invalidUpdate = new TicketStatusUpdateDTO(TicketStatus.OPEN, 2L);
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticketEntity));
 
         // Act
