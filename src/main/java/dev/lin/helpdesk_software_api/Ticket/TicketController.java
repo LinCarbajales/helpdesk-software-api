@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
 
 import java.util.List;
 
@@ -15,11 +16,11 @@ import java.util.List;
 @RequestMapping(path = "${api-endpoint}/tickets")
 public class TicketController {
 
-    private final TicketService ticketService;
+    private final ITicketService ticketService;
     private final TicketServiceImpl ticketServiceImpl;
 
     public TicketController(
-        TicketService ticketService,
+        ITicketService ticketService,
         TicketServiceImpl ticketServiceImpl
     ) {
         this.ticketService = ticketService;

@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping(path = "${api-endpoint}/subjects")
 public class SubjectController {
     
-    private final SubjectService subjectService;
+    private final ISubjectService subjectService;
 
-    public SubjectController(SubjectService subjectService) {
+    public SubjectController(ISubjectService subjectService) {
         this.subjectService = subjectService;
     }
 

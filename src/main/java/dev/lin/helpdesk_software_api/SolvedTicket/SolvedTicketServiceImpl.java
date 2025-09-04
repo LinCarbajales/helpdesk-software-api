@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SolvedTicketServiceImpl implements SolvedTicketService {
+public class SolvedTicketServiceImpl implements ISolvedTicketService {
 
     private final SolvedTicketRepository solvedTicketRepository;
     private final SolvedTicketMapper solvedTicketMapper;

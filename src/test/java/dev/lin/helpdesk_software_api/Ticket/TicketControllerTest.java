@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
 
 @WebMvcTest(controllers = TicketController.class)
 class TicketControllerTest {

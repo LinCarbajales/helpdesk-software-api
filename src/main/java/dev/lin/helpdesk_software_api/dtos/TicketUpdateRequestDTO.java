@@ -1,5 +1,6 @@
-package dev.lin.helpdesk_software_api.Ticket;
+package dev.lin.helpdesk_software_api.dtos;
 
+import dev.lin.helpdesk_software_api.Ticket.TicketStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
