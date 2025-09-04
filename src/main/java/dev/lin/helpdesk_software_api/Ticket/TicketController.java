@@ -18,14 +18,11 @@ import java.util.List;
 public class TicketController {
 
     private final ITicketService ticketService;
-    private final TicketServiceImpl ticketServiceImpl;
 
     public TicketController(
-        ITicketService ticketService,
-        TicketServiceImpl ticketServiceImpl
+        ITicketService ticketService
     ) {
         this.ticketService = ticketService;
-        this.ticketServiceImpl = ticketServiceImpl;
     }
 
     @GetMapping("")
@@ -35,7 +32,7 @@ public class TicketController {
 
     @GetMapping("/{id}")
     public TicketResponseDTO getTicketById(@PathVariable Long id) {
-        return ticketServiceImpl.showById(id);
+        return ticketService.showById(id);
     }
 
     @GetMapping("/combined")
@@ -59,7 +56,7 @@ public class TicketController {
         @Valid @RequestBody TicketStatusUpdateDTO dtoRequest
     ) {
 
-        TicketResponseDTO updatedTicket = ticketServiceImpl.updateTicketStatus(id, dtoRequest);
+        TicketResponseDTO updatedTicket = ticketService.updateTicketStatus(id, dtoRequest);
     
         if (updatedTicket == null) {
             return ResponseEntity.badRequest().build();
