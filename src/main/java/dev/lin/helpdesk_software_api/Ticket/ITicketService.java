@@ -13,4 +13,5 @@ public interface ITicketService extends IEditableService<TicketResponseDTO, Tick
     TicketResponseDTO updateTicketStatus(Long ticketId, TicketStatusUpdateDTO dtoRequest);
     List<CombinedTicketDTO> getAllCombinedTickets();
     TicketResponseDTO updateTicket(Long ticketId, TicketEditDTO dtoRequest);
+    void deleteTicket(Long ticketId);
 }

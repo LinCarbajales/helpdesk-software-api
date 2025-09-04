@@ -95,7 +95,7 @@ public class TicketServiceImpl implements ITicketService {
             .orElse(null);
     }
 
-        @Override
+    @Override
     @Transactional
     public TicketResponseDTO updateTicket(Long ticketId, TicketEditDTO dtoRequest) {
         return ticketRepository.findById(ticketId)
@@ -121,5 +121,14 @@ public class TicketServiceImpl implements ITicketService {
                 return ticketMapper.toDTO(updatedTicket);
             })
             .orElseThrow(() -> new TicketNotFoundException("Ticket not found with id " + ticketId));
+    }
+
+    @Override
+    @Transactional
+    public void deleteTicket(Long ticketId) {
+        if (!ticketRepository.existsById(ticketId)) {
+            throw new TicketNotFoundException("Ticket not found with id " + ticketId);
+        }
+        ticketRepository.deleteById(ticketId);
     }
 }

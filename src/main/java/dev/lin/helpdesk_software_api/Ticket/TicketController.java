@@ -73,4 +73,10 @@ public class TicketController {
         TicketResponseDTO updatedTicket = ticketService.updateTicket(id, dtoRequest);
         return ResponseEntity.ok(updatedTicket);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
+        ticketService.deleteTicket(id);
+        return ResponseEntity.noContent().build();
+    }
 }
