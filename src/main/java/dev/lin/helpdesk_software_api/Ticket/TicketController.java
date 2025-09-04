@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import dev.lin.helpdesk_software_api.dtos.CombinedTicketDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketEditDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketRequestDTO;
 import dev.lin.helpdesk_software_api.dtos.TicketResponseDTO;
-import dev.lin.helpdesk_software_api.dtos.TicketUpdateRequestDTO;
+import dev.lin.helpdesk_software_api.dtos.TicketStatusUpdateDTO;
 
 import java.util.List;
 
@@ -52,18 +53,30 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(entityStored);
     }
 
-    @PatchMapping("/{ticketId}")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<TicketResponseDTO> updateTicketStatus(
-        @PathVariable Long ticketId,
-        @Valid @RequestBody TicketUpdateRequestDTO dtoRequest
+        @PathVariable Long id,
+        @Valid @RequestBody TicketStatusUpdateDTO dtoRequest
     ) {
 
-        TicketResponseDTO updatedTicket = ticketServiceImpl.updateTicketStatus(ticketId, dtoRequest);
+        TicketResponseDTO updatedTicket = ticketServiceImpl.updateTicketStatus(id, dtoRequest);
     
         if (updatedTicket == null) {
             return ResponseEntity.badRequest().build();
         }
     
         return ResponseEntity.ok(updatedTicket);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<TicketResponseDTO> editTicket(@PathVariable Long id, @RequestBody TicketEditDTO dtoRequest) {
+        TicketResponseDTO updatedTicket = ticketService.updateTicket(id, dtoRequest);
+        return ResponseEntity.ok(updatedTicket);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
+        ticketService.deleteTicket(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -3,6 +3,7 @@ package dev.lin.helpdesk_software_api.Ticket;
 import java.time.LocalDateTime;
 
 import dev.lin.helpdesk_software_api.Employee.EmployeeEntity;
+import dev.lin.helpdesk_software_api.SolvedTicket.SolvedTicketEntity;
 import dev.lin.helpdesk_software_api.Subject.SubjectEntity;
 import jakarta.persistence.*;
 
@@ -32,7 +33,7 @@ public class TicketEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private TicketStatus status = TicketStatus.OPEN;
+    private TicketStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,6 +41,8 @@ public class TicketEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private SolvedTicketEntity solvedTicket;
 
     public TicketEntity() {
     }
@@ -48,6 +51,7 @@ public class TicketEntity {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.status = TicketStatus.OPEN;
     }
 
     @PreUpdate
@@ -92,6 +96,10 @@ public class TicketEntity {
         return updatedAt;
     }
 
+    public SolvedTicketEntity getSolvedTicket() {
+        return solvedTicket;
+    }
+
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -119,6 +127,10 @@ public class TicketEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setSolvedTicket(SolvedTicketEntity solvedTicket) {
+        this.solvedTicket = solvedTicket;
     }
     
 }
